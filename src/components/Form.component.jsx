@@ -1,71 +1,126 @@
 import React, { Component } from "react";
-import Docxtemplater from "docxtemplater";
-import PizZip from "pizzip";// for Docxtemplater
-import PizZipUtils from "pizzip/utils/index.js";//part of pizzip
-import { saveAs } from "file-saver";
-
+import DwnldBtn from './DwnldBtn.component'
+import './form.css';
+import places from "../db/db-places";
 
 
 
 class FormComponent extends Component {
     constructor(props) {
         super(props);
-        this.state = { name: 'Illia' }
+        this.state = {
+            name: 'Illia',
+            location: '',
+            companyTo: '',
+            locationPromptCounter: 0,
+        }
         this.handleNameInput = this.handleNameInput.bind(this);
-        this.generateDocument = this.generateDocument.bind(this);
-        this.loadFile = this.loadFile.bind(this);
+        this.handleLocationInput = this.handleLocationInput.bind(this);
+        this.handleCompanyToInput = this.handleCompanyToInput.bind(this);
+        this.handlePlaceBtn = this.handlePlaceBtn.bind(this);
+        this.handleLoopPromptCheck = this.handleLoopPromptCheck.bind(this);
+        this.handlePlaceState = this.handlePlaceState.bind(this);
+
     };
 
     handleNameInput(event) {
         this.setState({ name: event.target.value })
-        console.log(event.target.value);
+    }
+    handleLocationInput(event) {
+        this.setState({ location: event.target.value })
+    }
+    handleCompanyToInput(event) {
+        this.setState({ companyTo: event.target.value })
     }
 
-    loadFile(url, callback) {
-        PizZipUtils.getBinaryContent(url, callback);
+    handlePlaceState() {
+        const counter = this.state.locationPromptCounter
+        this.setState({
+            location: places[counter].location,
+            companyTo: places[counter].name
+        });
     }
 
-    generateDocument() {
-        const userName = this.state.name
+    handleLoopPromptCheck() {
+        const counter = this.state.locationPromptCounter
 
-        this.loadFile(
-            "./hello.docx",
-            function (error, content) {
-                if (error) {
-                    throw error;
-                }
-                const zip = new PizZip(content);
-                const doc = new Docxtemplater(zip, {
-                    paragraphLoop: true,
-                    linebreaks: true,
-                });
+        if (counter < 0) {
+            this.setState({
+                locationPromptCounter: places.length - 1,
+            }, this.handlePlaceState);
+        }
 
-                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                doc.render({
-                    first_name: userName,
-                    last_name: "Doe",
-                    phone: "0652455478",
-                    description: "New Website",
-                });
-                const out = doc.getZip().generate({
-                    type: "blob",
-                    mimeType:
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                }); //Output the document using Data-URI
-                saveAs(out, "output.docx");
-            }
-        );
-    };
+        if (counter === places.length) {
+            this.setState({
+                locationPromptCounter: 0,
+            }, this.handlePlaceState);
+        }
+
+        if (counter >= 0 && counter < places.length) {
+            this.handlePlaceState()
+        }
+    }
+
+    handlePlaceBtn = (event) => {
+        if (event.target.id === 'prevPlace') {
+            this.setState((prev) => {
+                return { locationPromptCounter: prev.locationPromptCounter + 1 };
+            }, this.handleLoopPromptCheck);
+        } else if (event.target.id === 'nextPlace') {
+            this.setState((prev) => {
+                return { locationPromptCounter: prev.locationPromptCounter - 1 };
+            }, this.handleLoopPromptCheck);
+        }
+    }
+
+
+
+
+
+
+
+
+
 
     render() {
         return (
-            <div>
+            <div className="employeMenu">
                 <label>
-                    Name input
-                    <input type="text" onChange={this.handleNameInput} />
+                    Співробітник
+                    <select name="employe" id="employeSelect" onChange={this.handleNameInput}>
+                        <option value="kozachenko">Козаченко І.С.</option>
+                        <option value="zhelibay">Желіба Ю.О.</option>
+                        <option value="rimashevskiy">Рімашевський Ю.С.</option>
+                        <option value="kostukova">Костюкова О.С.</option>
+                        <option value="slivinska">Сливінська М.В.</option>
+                        <option value="zhelibat">Желіба Т.О.</option>
+                        <option value="vovnenko">Вовненко В.С.</option>
+                        <option value="voytkod">Войтко Д.А.</option>
+                        <option value="shumskiy">Шумський О.А.</option>
+                    </select>
                 </label>
+                <hr />
+                <div>
+                    <div>
+                        <label>
+                            Місце призначення
+                            <input onChange={this.handleLocationInput} type="text" value={this.state.location} />
+                        </label>
+                        <label>
+                            Підприємство
+                            <input onChange={this.handleCompanyToInput} type="text" value={this.state.companyTo} />
+                        </label>
+                        Приклади
+                        <button id="prevPlace" onClick={this.handlePlaceBtn}> {'<<'} </button>
+                        <button id="nextPlace" onClick={this.handlePlaceBtn}> {'>>'} </button>
+                    </div>
 
-                <button onClick={this.generateDocument}>Generate main</button>
+                </div>
+                <hr />
+
+
+
+                <DwnldBtn />
             </div>
         );
     }
