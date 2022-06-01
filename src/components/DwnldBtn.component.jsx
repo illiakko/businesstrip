@@ -44,7 +44,7 @@ const DwnldBtn = () => {
 
     return (
         <button onClick={generateDocument}>
-            Завантажити
+            Скачати документи
         </button>
     );
 

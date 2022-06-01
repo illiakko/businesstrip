@@ -1,9 +1,11 @@
 import React, { Component } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import DwnldBtn from './DwnldBtn.component'
 import './form.css';
 import places from "../db/db-places";
 import purposes from "../db/db-purposes"
 import employes from "../db/db-employe"
+import TripsShortlist from './tripsShortlist.component'
 
 
 
@@ -48,6 +50,8 @@ class FormComponent extends Component {
         this.handleOrdertNumber = this.handleOrdertNumber.bind(this);
         this.handleBasisInput = this.handleBasisInput.bind(this);
         this.addTripToOrder = this.addTripToOrder.bind(this);
+        this.removeTripFromArr = this.removeTripFromArr.bind(this);
+
 
     };
 
@@ -180,8 +184,12 @@ class FormComponent extends Component {
 
 
         const newTrip = {
+            id: uuidv4(),
             tripNumber: this.state.tripNumber,
+            employeName: this.state.employeObj.name,
             employeNameTo: this.state.employeObj.nameTo,
+            employeNameWho: this.state.employeObj.nameWho,
+            employeNameAbr: this.state.employeObj.nameAbbrev,
             employePosition: this.state.employeObj.position,
             location: this.state.location,
             companyTo: this.state.companyTo,
@@ -197,11 +205,10 @@ class FormComponent extends Component {
             tripPurposeDone: this.state.tripPurposeDone,
             tripDoneDate: this.state.tripEndDate,
         }
+
         const newTripArr = this.state.tripsArr.concat(newTrip);
-        this.setState({
-            tripsArr: newTripArr
-        })
-        console.log(this.state.tripsArr);
+        this.setState({ tripsArr: newTripArr })
+
     }
     //===============================================purpose prompt
     //===============================================order logic
@@ -229,6 +236,14 @@ class FormComponent extends Component {
     }
 
 
+    removeTripFromArr(event) {
+        const newTripsArr = this.state.tripsArr.filter(trip => trip.id !== event.target.id)
+
+        this.setState({
+            tripsArr: newTripsArr
+        })
+
+    }
     //===============================================order logic
 
 
@@ -239,23 +254,23 @@ class FormComponent extends Component {
                 <div className="orderMenu">
                     <label >
                         Від компанії
-                        <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
+                        <select name="companyName" id="companySelect" defaultValue={'yuz'} onChange={this.handleCompanyInput}>
                             <option value="nio">НІО "ХОЛОД"</option>
                             <option value="yuz">ЮЖ "ХОЛОД"</option>
                         </select>
                     </label>
                     <label >
                         Дата наказу
-                        <input type="date" onChange={this.handleOrdertDate} />
+                        <input type="date" onChange={this.handleOrdertDate} defaultValue={'2022-09-29'} />
                     </label>
                     <label >
                         Номер наказу
-                        <input type="text" onChange={this.handleOrdertNumber} />
+                        <input type="text" onChange={this.handleOrdertNumber} defaultValue={'21'} />
                     </label>
                     <ul>
-                        <li>
-                            <p>1.	Відрядити начальника комерційного відділення Желібу Т.О. в с.Роздольне , ПП Фаворит ІІІ   з 10.01.22 р. по 10.01.22 р. Технічне переоснащення АХУ холоди-льника.</p>
-                        </li>
+
+                        <TripsShortlist trips={this.state.tripsArr} removeTrip={this.removeTripFromArr} />
+
                     </ul>
                     <button onClick={this.showEmployeMenu}>Додати відрядження</button>
                 </div>
@@ -266,14 +281,14 @@ class FormComponent extends Component {
                         <div>
                             <label>
                                 Номер посвідчення
-                                <input onChange={this.handleTripNumber} type="text" />
+                                <input onChange={this.handleTripNumber} type="text" defaultValue={'17'} />
                             </label>
                         </div>
 
                         <div>
                             <label>
                                 Співробітник
-                                <select name="employe" id="employeSelect" onChange={this.handleNameInput}>
+                                <select name="employe" id="employeSelect" onChange={this.handleNameInput} defaultValue={'zhelibay'}>
                                     <option value="kozachenko">Козаченко І.С.</option>
                                     <option value="zhelibay">Желіба Ю.О.</option>
                                     <option value="rimashevskiy">Рімашевський Ю.С.</option>
@@ -308,18 +323,18 @@ class FormComponent extends Component {
                         <div>
                             <label>
                                 Початок відрядження
-                                <input type="date" onChange={this.handleTripStartDate} />
+                                <input type="date" onChange={this.handleTripStartDate} defaultValue={'2022-02-10'} />
                             </label>
                             <label>
                                 Кінець відрядження
-                                <input type="date" onChange={this.handleTripEndDate} />
+                                <input type="date" onChange={this.handleTripEndDate} defaultValue={'2022-02-20'} />
                             </label>
                         </div>
                         <hr />
                         <div>
                             <label>
                                 Підстава на відряждення (Договір)
-                                <input type="basis" onChange={this.handleBasisInput} />
+                                <input type="basis" onChange={this.handleBasisInput} defaultValue={'НИОХ/12-22'} />
                             </label>
                             <label>
                                 Мета відрядження
