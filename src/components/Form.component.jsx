@@ -185,6 +185,9 @@ class FormComponent extends Component {
 
         const newTrip = {
             id: uuidv4(),
+            companyName: this.state.companyName,
+            orderNumber: this.state.orderNumber,
+            orderDate: this.state.orderDate,
             tripNumber: this.state.tripNumber,
             employeName: this.state.employeObj.name,
             employeNameTo: this.state.employeObj.nameTo,
@@ -193,14 +196,11 @@ class FormComponent extends Component {
             employePosition: this.state.employeObj.position,
             location: this.state.location,
             companyTo: this.state.companyTo,
-            tripPurposeShort: this.state.tripPurposeShort,
             tripStartDate: new Date(this.state.tripStartDate).toLocaleDateString(),
             tripEndDate: new Date(this.state.tripEndDate).toLocaleDateString(),
             tripDuration: tripDurationDays,
-            orderNumber: this.state.orderNumber,
-            orderDate: this.state.orderDate,
-            companyName: this.state.companyName,
             tripBasis: this.state.tripBasis,
+            tripPurposeShort: this.state.tripPurposeShort,
             tripPurposeTask: this.state.tripPurposeTask,
             tripPurposeDone: this.state.tripPurposeDone,
             tripDoneDate: this.state.tripEndDate,
@@ -232,6 +232,7 @@ class FormComponent extends Component {
     showEmployeMenu() {
         this.setState({
             isEmployeMenuOpen: !this.state.isEmployeMenuOpen
+
         })
     }
 
@@ -246,6 +247,25 @@ class FormComponent extends Component {
     }
     //===============================================order logic
 
+    componentDidMount() {
+        this.setState({
+
+            tripNumber: '17',
+            employeObj: 'kozachenko',
+            location: 'м.Черкаси',
+            companyTo: 'ПАТ Юрія',
+            tripStartDate: '2022-09-19',
+            tripEndDate: '2022-09-29',
+            tripBasis: '',
+            tripPurposeTask: '',
+            tripPurposeShort: '',
+            tripPurposeDone: '',
+            orderDate: '2022-09-18',
+            orderNumber: '22',
+            companyName: 'нио холод',
+        })
+    }
+
 
 
     render() {
@@ -254,25 +274,29 @@ class FormComponent extends Component {
                 <div className="orderMenu">
                     <label >
                         Від компанії
-                        <select name="companyName" id="companySelect" defaultValue={'yuz'} onChange={this.handleCompanyInput}>
+                        <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
                             <option value="nio">НІО "ХОЛОД"</option>
                             <option value="yuz">ЮЖ "ХОЛОД"</option>
                         </select>
                     </label>
                     <label >
                         Дата наказу
-                        <input type="date" onChange={this.handleOrdertDate} defaultValue={'2022-09-29'} />
+                        <input type="date" onChange={this.handleOrdertDate} />
                     </label>
                     <label >
                         Номер наказу
-                        <input type="text" onChange={this.handleOrdertNumber} defaultValue={'21'} />
+                        <input type="text" onChange={this.handleOrdertNumber} />
                     </label>
                     <ul>
 
                         <TripsShortlist trips={this.state.tripsArr} removeTrip={this.removeTripFromArr} />
 
                     </ul>
-                    <button onClick={this.showEmployeMenu}>Додати відрядження</button>
+                    {!this.state.isEmployeMenuOpen
+                        ? <button onClick={this.showEmployeMenu}>Сформувати нове відрядження</button>
+                        : ''
+                    }
+
                 </div>
 
                 <hr />
@@ -323,11 +347,11 @@ class FormComponent extends Component {
                         <div>
                             <label>
                                 Початок відрядження
-                                <input type="date" onChange={this.handleTripStartDate} defaultValue={'2022-02-10'} />
+                                <input type="date" onChange={this.handleTripStartDate} />
                             </label>
                             <label>
                                 Кінець відрядження
-                                <input type="date" onChange={this.handleTripEndDate} defaultValue={'2022-02-20'} />
+                                <input type="date" onChange={this.handleTripEndDate} />
                             </label>
                         </div>
                         <hr />
@@ -375,7 +399,7 @@ class FormComponent extends Component {
                     </div>
 
                     : ''}
-                <DwnldBtn />
+                <DwnldBtn orderData={this.state} />
             </div>
         );
     }
