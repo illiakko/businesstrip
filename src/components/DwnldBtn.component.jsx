@@ -10,6 +10,15 @@ const DwnldBtn = ({ tripsArr }) => {
 
 
 
+
+    const orderTripListArr = tripsArr.map(
+        (trip, index) => {
+            const listItem = `${index + 1}.	Відрядити ${trip.employeNameAbrWho} в ${trip.location}, ${trip.companyTo} з ${trip.tripStartDate} р. по ${trip.tripEndDate} р. ${trip.tripPurposeShort}.\r\n`
+            return { employeTrip: listItem }
+        }
+
+
+    );
     const orderTripList = tripsArr.reduce(
         (tripsList, trip, index) => (
             tripsList + `${index + 1}.	Відрядити ${trip.employeNameAbr} в ${trip.location}, ${trip.companyTo} з ${trip.tripStartDate} р. по ${trip.tripEndDate} р. ${trip.tripPurposeShort}.\r\n`
@@ -18,7 +27,7 @@ const DwnldBtn = ({ tripsArr }) => {
 
     const giveTripDocumentTo = tripsArr.reduce(
         (recipientList, tripEmploye) => (
-            recipientList + ` ${tripEmploye.employeNameAbr} № ${tripEmploye.tripNumber},`
+            recipientList + ` ${tripEmploye.employeNameAbr} - № ${tripEmploye.tripNumber},`
         ), ''
     ).slice(0, -1);
 
@@ -57,35 +66,20 @@ const DwnldBtn = ({ tripsArr }) => {
 
 
                 doc.render({
-                    company_name: tripsArr[0].companyName,
                     company_nameFull: tripsArr[0].companyNameFull,
                     order_date: tripsArr[0].orderDate,
                     order_number: tripsArr[0].orderNumber,
-                    order_list: orderTripList,
-                    employe_nameTo: tripsArr[0].employeNameTo,
-                    employe_nameAbr: tripsArr[0].employeNameAbr,
-                    employe_position: tripsArr[0].employePosition,
-                    location: tripsArr[0].location,
-                    companyTo: tripsArr[0].companyTo,
-                    trip_purposeTask: tripsArr[0].tripPurposeTask,
-                    trip_duration: tripsArr[0].tripDuration,
-                    trip_start: tripsArr[0].tripStartDate,
-                    trip_end: tripsArr[0].tripEndDate,
-                    trip_number: tripsArr[0].tripNumber,
-                    trip_basis: tripsArr[0].tripBasis,
-                    employe_name: tripsArr[0].employeName,
-                    trip_purposeDone: tripsArr[0].tripPurposeTask,
-                    trip_doneDate: tripsArr[0].tripDoneDate,
+                    order_list: orderTripListArr,
                     give_trip_documetnTo: giveTripDocumentTo,
                     sign_list: signList,
-
+                    trips_arr: tripsArr,
                 });
                 const out = doc.getZip().generate({
                     type: "blob",
                     mimeType:
                         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 }); //Output the document using Data-URI
-                saveAs(out, "output.docx");
+                saveAs(out, `Наказ ${tripsArr[0].orderNumber}.docx`);
             }
         );
     };

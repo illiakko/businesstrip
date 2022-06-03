@@ -5,6 +5,7 @@ import './form.css';
 import places from "../db/db-places";
 import purposes from "../db/db-purposes"
 import employes from "../db/db-employe"
+import SelectEmploye from "./selectEmploye.component";
 import TripsShortlist from './tripsShortlist.component'
 
 
@@ -66,7 +67,6 @@ class FormComponent extends Component {
 
 
     handleNameInput(event) {
-
         const currentEmploye = employes.find(employe => {
             return employe.id === event.target.value
         })
@@ -183,7 +183,6 @@ class FormComponent extends Component {
         this.showEmployeMenu();
         const tripDurationDays = Math.ceil((this.state.tripEndDate - this.state.tripStartDate) / (1000 * 60 * 60 * 24));
 
-
         const newTrip = {
             id: uuidv4(),
             companyName: this.state.companyName,
@@ -195,6 +194,7 @@ class FormComponent extends Component {
             employeNameTo: this.state.employeObj.nameTo,
             employeNameWho: this.state.employeObj.nameWho,
             employeNameAbr: this.state.employeObj.nameAbbrev,
+            employeNameAbrWho: this.state.employeObj.nameAbbrevWho,
             employePosition: this.state.employeObj.position,
             location: this.state.location,
             companyTo: this.state.companyTo,
@@ -205,7 +205,7 @@ class FormComponent extends Component {
             tripPurposeShort: this.state.tripPurposeShort,
             tripPurposeTask: this.state.tripPurposeTask,
             tripPurposeDone: this.state.tripPurposeDone,
-            tripDoneDate: new Date(this.state.tripDoneDate).toLocaleDateString(),
+            tripDoneDate: new Date(this.state.tripEndDate).toLocaleDateString(),
         }
 
         const newTripArr = this.state.tripsArr.concat(newTrip);
@@ -258,26 +258,6 @@ class FormComponent extends Component {
     }
     //===============================================order logic
 
-    componentDidMount() {
-        this.setState({
-
-            tripNumber: '17',
-            employeObj: 'kozachenko',
-            location: 'м.Черкаси',
-            companyTo: 'ПАТ Юрія',
-            tripStartDate: '2022-09-19',
-            tripEndDate: '2022-09-29',
-            tripBasis: '',
-            tripPurposeTask: '',
-            tripPurposeShort: '',
-            tripPurposeDone: '',
-            orderDate: '2022-09-18',
-            orderNumber: '22',
-            companyName: 'нио холод',
-        })
-    }
-
-
 
     render() {
         return (
@@ -286,6 +266,7 @@ class FormComponent extends Component {
                     <label >
                         Від компанії
                         <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
+                            <option value="">Обрати</option>
                             <option value="nio">НІО "ХОЛОД"</option>
                             <option value="yuz">ЮЖ "ХОЛОД"</option>
                         </select>
@@ -316,25 +297,12 @@ class FormComponent extends Component {
                         <div>
                             <label>
                                 Номер посвідчення
-                                <input onChange={this.handleTripNumber} type="text" defaultValue={'17'} />
+                                <input onChange={this.handleTripNumber} type="text" />
                             </label>
                         </div>
 
                         <div>
-                            <label>
-                                Співробітник
-                                <select name="employe" id="employeSelect" onChange={this.handleNameInput} defaultValue={'zhelibay'}>
-                                    <option value="kozachenko">Козаченко І.С.</option>
-                                    <option value="zhelibay">Желіба Ю.О.</option>
-                                    <option value="rimashevskiy">Рімашевський Ю.С.</option>
-                                    <option value="kostukova">Костюкова О.С.</option>
-                                    <option value="slivinska">Сливінська М.В.</option>
-                                    <option value="zhelibat">Желіба Т.О.</option>
-                                    <option value="vovnenko">Вовненко В.С.</option>
-                                    <option value="voytkod">Войтко Д.А.</option>
-                                    <option value="shumskiy">Шумський О.А.</option>
-                                </select>
-                            </label>
+                            <SelectEmploye handleChange={this.handleNameInput} />
                         </div>
 
                         <hr />
