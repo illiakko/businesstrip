@@ -29,6 +29,7 @@ class FormComponent extends Component {
             orderDate: '',
             orderNumber: '',
             companyName: '',
+            companyNameFull: '',
             tripsArr: []
         }
         this.handleCompanyInput = this.handleCompanyInput.bind(this);
@@ -186,6 +187,7 @@ class FormComponent extends Component {
         const newTrip = {
             id: uuidv4(),
             companyName: this.state.companyName,
+            companyNameFull: this.state.companyNameFull,
             orderNumber: this.state.orderNumber,
             orderDate: this.state.orderDate,
             tripNumber: this.state.tripNumber,
@@ -203,7 +205,7 @@ class FormComponent extends Component {
             tripPurposeShort: this.state.tripPurposeShort,
             tripPurposeTask: this.state.tripPurposeTask,
             tripPurposeDone: this.state.tripPurposeDone,
-            tripDoneDate: this.state.tripEndDate,
+            tripDoneDate: new Date(this.state.tripDoneDate).toLocaleDateString(),
         }
 
         const newTripArr = this.state.tripsArr.concat(newTrip);
@@ -214,9 +216,18 @@ class FormComponent extends Component {
     //===============================================order logic
 
     handleCompanyInput(event) {
-        this.setState({
-            companyName: event.target.value
-        })
+        if (event.target.value === 'yuz') {
+            this.setState({
+                companyName: 'ТОВ "ЮЖ-Холод"',
+                companyNameFull: 'Товариство з обмеженою відповідальністю "ЮЖ-Холод"'
+            })
+        } else if (event.target.value === 'nio') {
+            this.setState({
+                companyName: 'ТОВ "НІО "Холод"',
+                companyNameFull: 'ТОВ "Науково-інженерне об\'єднання "ХОЛОД"'
+            })
+        }
+
     }
     handleOrdertDate(event) {
         this.setState({
@@ -225,7 +236,7 @@ class FormComponent extends Component {
     }
     handleOrdertNumber(event) {
         this.setState({
-            orderDate: event.target.value
+            orderNumber: event.target.value
         })
     }
 
@@ -399,7 +410,7 @@ class FormComponent extends Component {
                     </div>
 
                     : ''}
-                <DwnldBtn orderData={this.state} />
+                <DwnldBtn tripsArr={this.state.tripsArr} />
             </div>
         );
     }

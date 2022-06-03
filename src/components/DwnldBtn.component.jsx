@@ -6,14 +6,40 @@ import { saveAs } from "file-saver";
 
 
 
-const DwnldBtn = ({ orderData }) => {
+const DwnldBtn = ({ tripsArr }) => {
+
+
+
+    const orderTripList = tripsArr.reduce(
+        (tripsList, trip, index) => (
+            tripsList + `${index + 1}.	Відрядити ${trip.employeNameAbr} в ${trip.location}, ${trip.companyTo} з ${trip.tripStartDate} р. по ${trip.tripEndDate} р. ${trip.tripPurposeShort}.\r\n`
+        ), ''
+    );
+
+    const giveTripDocumentTo = tripsArr.reduce(
+        (recipientList, tripEmploye) => (
+            recipientList + ` ${tripEmploye.employeNameAbr} № ${tripEmploye.tripNumber},`
+        ), ''
+    ).slice(0, -1);
+
+    const signList = tripsArr.reduce(
+        (singsList, employe) => (
+            singsList + `${employe.employeNameAbr}................\r\n`
+        ), ''
+    );
+
+
+
+
+
+
 
     function loadFile(url, callback) {
         PizZipUtils.getBinaryContent(url, callback);
     }
 
     const generateDocument = () => {
-        console.log(orderData.orderDate);
+
         loadFile(
             "./orderTemplate.docx",
             function (error, content) {
@@ -28,27 +54,30 @@ const DwnldBtn = ({ orderData }) => {
 
                 // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
 
-                const orderTripList = `1.	Відрядити ${orderData.tripsArr[0].tripPurposeShort} ${orderData.tripsArr[0].employeNameAbr} в ${orderData.tripsArr[0].location} , ${orderData.tripsArr[0].companyTo}   з ${orderData.tripsArr[0].tripStartDate} р. по ${orderData.tripsArr[0].tripEndDate} р. ${orderData.tripsArr[0].tripPurposeShort}`
+
 
                 doc.render({
-                    company_name: orderData.tripsArr[0].companyName,
-                    order_date: orderData.tripsArr[0].orderDate,
-                    order_number: orderData.tripsArr[0].orderNumber,
-                    order_list: orderData.tripsArr[0].orderTripList,
-                    employe_nameTo: orderData.tripsArr[0].employeNameTo,
-                    employe_nameAbr: orderData.tripsArr[0].employeNameAbr,
-                    employe_position: orderData.tripsArr[0].employePosition,
-                    location: orderData.tripsArr[0].location,
-                    companyTo: orderData.tripsArr[0].companyTo,
-                    trip_purposeTask: orderData.tripsArr[0].tripPurposeTask,
-                    trip_duration: orderData.tripsArr[0].tripDuration,
-                    trip_start: orderData.tripsArr[0].tripStartDate,
-                    trip_end: orderData.tripsArr[0].tripEndDate,
-                    trip_number: orderData.tripsArr[0].tripNumber,
-                    employe_name: orderData.tripsArr[0].employeName,
-                    trip_purposeTask: orderData.tripsArr[0].tripPurposeTask,
-                    trip_purposeDone: orderData.tripsArr[0].tripPurposeTask,
-                    trip_doneDate: orderData.tripsArr[0].tripDoneDate,
+                    company_name: tripsArr[0].companyName,
+                    company_nameFull: tripsArr[0].companyNameFull,
+                    order_date: tripsArr[0].orderDate,
+                    order_number: tripsArr[0].orderNumber,
+                    order_list: orderTripList,
+                    employe_nameTo: tripsArr[0].employeNameTo,
+                    employe_nameAbr: tripsArr[0].employeNameAbr,
+                    employe_position: tripsArr[0].employePosition,
+                    location: tripsArr[0].location,
+                    companyTo: tripsArr[0].companyTo,
+                    trip_purposeTask: tripsArr[0].tripPurposeTask,
+                    trip_duration: tripsArr[0].tripDuration,
+                    trip_start: tripsArr[0].tripStartDate,
+                    trip_end: tripsArr[0].tripEndDate,
+                    trip_number: tripsArr[0].tripNumber,
+                    trip_basis: tripsArr[0].tripBasis,
+                    employe_name: tripsArr[0].employeName,
+                    trip_purposeDone: tripsArr[0].tripPurposeTask,
+                    trip_doneDate: tripsArr[0].tripDoneDate,
+                    give_trip_documetnTo: giveTripDocumentTo,
+                    sign_list: signList,
 
                 });
                 const out = doc.getZip().generate({
