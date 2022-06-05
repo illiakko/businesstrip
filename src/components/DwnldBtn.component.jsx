@@ -85,9 +85,12 @@ const DwnldBtn = ({ tripsArr }) => {
     };
 
     return (
-        <button onClick={generateDocument}>
-            Скачати документи
-        </button>
+        <div className="btnWrapper">
+            <p onClick={generateDocument} >
+                Скачати документ
+            </p>
+        </div>
+
     );
 
 };

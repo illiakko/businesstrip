@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import './App.css'
 
-import FormComponent from "./components/Form.component.jsx";
+import FormComponent from "./components/form.component.jsx";
 
 
 

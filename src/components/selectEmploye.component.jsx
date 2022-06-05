@@ -6,9 +6,10 @@ const SelectEmploye = function ({ handleChange }) {
     return (
 
         <label>
-            Співробітник
+            <p>Співробітник</p>
+
             <select name="employe" id="employeSelect" onChange={handleChange}>
-                <option value="">Обрати</option>
+                <option value=""></option>
                 {employes.map((person, index) => <option key={index} value={person.id}>{person.nameAbbrev}</option>)}
 
             </select>

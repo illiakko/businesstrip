@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import DwnldBtn from './DwnldBtn.component'
-import './form.css';
+import dateFormat, { masks } from "dateformat";
+import DwnldBtn from './dwnldBtn.component'
 import places from "../db/db-places";
 import purposes from "../db/db-purposes"
 import employes from "../db/db-employe"
@@ -92,7 +92,6 @@ class FormComponent extends Component {
     }
 
 
-    //===============================================place prompt
     handlePlaceState() {
         const counter = this.state.locationPromptCounter
         this.setState({
@@ -132,9 +131,6 @@ class FormComponent extends Component {
             }, this.handleLoopPromptCheck);
         }
     }
-
-    //===============================================place prompt
-    //===============================================purpose prompt
 
     handlePurposeState() {
         const counter = this.state.purposePromptCounter
@@ -181,14 +177,18 @@ class FormComponent extends Component {
 
     addTripToOrder() {
         this.showEmployeMenu();
-        const tripDurationDays = Math.ceil((this.state.tripEndDate - this.state.tripStartDate) / (1000 * 60 * 60 * 24));
+        const tripDurationDays = Math.ceil((this.state.tripEndDate - this.state.tripStartDate + 1) / (1000 * 60 * 60 * 24));
+        const startDate = dateFormat(this.state.tripStartDate, "dd.mm.yyyy")
+        const endDate = dateFormat(this.state.tripEndDate, "dd.mm.yyyy")
+        const doneDate = dateFormat(this.state.tripEndDate, "dd.mm.yyyy")
+        const orderDate = dateFormat(this.state.orderDate, "dd.mm.yyyy")
 
         const newTrip = {
             id: uuidv4(),
             companyName: this.state.companyName,
             companyNameFull: this.state.companyNameFull,
             orderNumber: this.state.orderNumber,
-            orderDate: this.state.orderDate,
+            orderDate: orderDate,
             tripNumber: this.state.tripNumber,
             employeName: this.state.employeObj.name,
             employeNameTo: this.state.employeObj.nameTo,
@@ -198,36 +198,34 @@ class FormComponent extends Component {
             employePosition: this.state.employeObj.position,
             location: this.state.location,
             companyTo: this.state.companyTo,
-            tripStartDate: new Date(this.state.tripStartDate).toLocaleDateString(),
-            tripEndDate: new Date(this.state.tripEndDate).toLocaleDateString(),
+            tripStartDate: startDate,
+            tripEndDate: endDate,
             tripDuration: tripDurationDays,
             tripBasis: this.state.tripBasis,
             tripPurposeShort: this.state.tripPurposeShort,
             tripPurposeTask: this.state.tripPurposeTask,
             tripPurposeDone: this.state.tripPurposeDone,
-            tripDoneDate: new Date(this.state.tripEndDate).toLocaleDateString(),
+            tripDoneDate: doneDate,
         }
 
         const newTripArr = this.state.tripsArr.concat(newTrip);
         this.setState({ tripsArr: newTripArr })
 
     }
-    //===============================================purpose prompt
-    //===============================================order logic
 
     handleCompanyInput(event) {
-        if (event.target.value === 'yuz') {
-            this.setState({
-                companyName: 'ТОВ "ЮЖ-Холод"',
-                companyNameFull: 'Товариство з обмеженою відповідальністю "ЮЖ-Холод"'
-            })
-        } else if (event.target.value === 'nio') {
+
+        if (event.target.value === 'nio') {
             this.setState({
                 companyName: 'ТОВ "НІО "Холод"',
                 companyNameFull: 'ТОВ "Науково-інженерне об\'єднання "ХОЛОД"'
             })
+        } else {
+            this.setState({
+                companyName: 'ТОВ "ЮЖ-Холод"',
+                companyNameFull: 'Товариство з обмеженою відповідальністю "ЮЖ-Холод"'
+            })
         }
-
     }
     handleOrdertDate(event) {
         this.setState({
@@ -256,129 +254,197 @@ class FormComponent extends Component {
         })
 
     }
-    //===============================================order logic
+
 
 
     render() {
         return (
             <div>
                 <div className="orderMenu">
-                    <label >
-                        Від компанії
-                        <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
-                            <option value="">Обрати</option>
-                            <option value="nio">НІО "ХОЛОД"</option>
-                            <option value="yuz">ЮЖ "ХОЛОД"</option>
-                        </select>
-                    </label>
-                    <label >
-                        Дата наказу
-                        <input type="date" onChange={this.handleOrdertDate} />
-                    </label>
-                    <label >
-                        Номер наказу
-                        <input type="text" onChange={this.handleOrdertNumber} />
-                    </label>
-                    <ul>
+                    <div>
+                        <label >
+                            <p>Від компанії</p>
+                            <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
+                                <option value=""></option>
+                                <option value="nio">НІО Холод</option>
+                                <option value="yuz">ЮЖ Холод</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label >
+                            <p>Дата наказу</p>
 
-                        <TripsShortlist trips={this.state.tripsArr} removeTrip={this.removeTripFromArr} />
+                            <input type="date" onChange={this.handleOrdertDate} />
+                        </label>
+                    </div>
+                    <div>
+                        <label >
+                            <p>Номер наказу</p>
 
-                    </ul>
-                    {!this.state.isEmployeMenuOpen
-                        ? <button onClick={this.showEmployeMenu}>Сформувати нове відрядження</button>
-                        : ''
-                    }
+                            <input type="text" onChange={this.handleOrdertNumber} />
+                        </label>
+                    </div>
+                    <div className="tripShortlist">
+                        <ul>
+                            <TripsShortlist trips={this.state.tripsArr} removeTrip={this.removeTripFromArr} />
+                        </ul>
+                    </div>
+
+
 
                 </div>
 
-                <hr />
+                <div className="btnWrapper">
+                    {!this.state.isEmployeMenuOpen
+                        ? <p onClick={this.showEmployeMenu}>Нове відрядження</p>
+                        : ''
+                    }
+                </div>
+
                 {this.state.isEmployeMenuOpen
-                    ? <div className="employeMenu">
-                        <div>
-                            <label>
-                                Номер посвідчення
-                                <input onChange={this.handleTripNumber} type="text" />
-                            </label>
+                    ? <div className="tripMenu">
+
+                        <div className="tripMenuSections">
+                            <div className="tripNumberBasisDateWrapper" >
+                                <div className="tripNumberBasis">
+                                    <div>
+                                        <label>
+                                            <p>Номер посвідчення</p>
+                                            <input onChange={this.handleTripNumber} type="text" />
+                                        </label>
+                                    </div>
+
+                                    <div>
+                                        <label>
+                                            <p>Підстава на відряждення (Договір)</p>
+                                            <input type="basis" onChange={this.handleBasisInput} />
+                                        </label>
+                                    </div>
+
+                                </div>
+
+                                <div className="tripEmploye">
+                                    <SelectEmploye handleChange={this.handleNameInput} />
+                                </div>
+
+                                <div className="tripLocationCompany">
+
+
+
+                                    <div className="tripLocationCompany">
+                                        <div>
+                                            <label>
+                                                <p>Місце призначення</p>
+                                                <input onChange={this.handleLocationInput} type="text" value={this.state.location} />
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label>
+                                                <p>Підприємство</p>
+                                                <input onChange={this.handleCompanyToInput} type="text" value={this.state.companyTo} />
+                                            </label>
+                                        </div>
+                                        <div className="navigationBtn">
+                                            <p id="prevPlace" onClick={this.handlePlaceBtn}> {'<<'} </p>
+                                            <p id="nextPlace" onClick={this.handlePlaceBtn}> {'>>'} </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div className="tripDate">
+                                    <div>
+                                        <label>
+                                            <p>Початок відрядження</p>
+                                            <input type="date" onChange={this.handleTripStartDate} />
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label>
+                                            <p>Кінець відрядження</p>
+                                            <input type="date" onChange={this.handleTripEndDate} />
+                                        </label>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div className="tripPurposeWrapper">
+
+                                <div>
+                                    <label>
+                                        <p>Мета відрядження</p>
+                                        <textarea
+                                            onChange={this.handlePurposeInput}
+                                            rows={5}
+                                            cols={40}
+                                            value={this.state.tripPurposeTask}
+                                        />
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <p>Мета відрядження скорочено</p>
+                                        <textarea
+                                            onChange={this.handlePurposeInput}
+                                            rows={5}
+                                            cols={40}
+                                            value={this.state.tripPurposeShort}
+                                        />
+                                    </label>
+                                </div>
+
+
+                                <div>
+                                    <label>
+                                        <p>Виконано</p>
+
+                                        <textarea
+                                            onChange={this.handlePurposeInput}
+                                            rows={5}
+                                            cols={40}
+                                            value={this.state.tripPurposeDone}
+                                        />
+                                    </label>
+                                </div>
+
+                                <div className="btnWrapper">
+                                    <p id="prevPurpose" onClick={this.handlePurposeBtn}> {'<<'} </p>
+                                    <p id="nextPurpose" onClick={this.handlePurposeBtn}> {'>>'} </p>
+                                </div>
+
+
+                            </div>
+
                         </div>
 
-                        <div>
-                            <SelectEmploye handleChange={this.handleNameInput} />
+
+
+
+
+
+
+
+
+
+                        <div className="btnWrapper">
+                            <p onClick={this.addTripToOrder}>
+                                Додати відрядження до наказу
+                            </p>
                         </div>
-
-                        <hr />
-
-                        <div>
-                            <label>
-                                Місце призначення
-                                <input onChange={this.handleLocationInput} type="text" value={this.state.location} />
-                            </label>
-                            <label>
-                                Підприємство
-                                <input onChange={this.handleCompanyToInput} type="text" value={this.state.companyTo} />
-                            </label>
-                            Приклади
-                            <button id="prevPlace" onClick={this.handlePlaceBtn}> {'<<'} </button>
-                            <button id="nextPlace" onClick={this.handlePlaceBtn}> {'>>'} </button>
-                        </div>
-
-                        <hr />
-
-                        <div>
-                            <label>
-                                Початок відрядження
-                                <input type="date" onChange={this.handleTripStartDate} />
-                            </label>
-                            <label>
-                                Кінець відрядження
-                                <input type="date" onChange={this.handleTripEndDate} />
-                            </label>
-                        </div>
-                        <hr />
-                        <div>
-                            <label>
-                                Підстава на відряждення (Договір)
-                                <input type="basis" onChange={this.handleBasisInput} defaultValue={'НИОХ/12-22'} />
-                            </label>
-                            <label>
-                                Мета відрядження
-                                <textarea
-                                    onChange={this.handlePurposeInput}
-                                    rows={4}
-                                    cols={50}
-                                    value={this.state.tripPurposeTask}
-                                />
-                            </label>
-                            <label>
-                                Мета відрядження скорочено
-                                <textarea
-                                    onChange={this.handlePurposeInput}
-                                    rows={2}
-                                    cols={50}
-                                    value={this.state.tripPurposeShort}
-                                />
-                            </label>
-                            <label>
-                                Виконано
-                                <textarea
-                                    onChange={this.handlePurposeInput}
-                                    rows={4}
-                                    cols={50}
-                                    value={this.state.tripPurposeDone}
-                                />
-                            </label>
-                            <button id="prevPurpose" onClick={this.handlePurposeBtn}> {'<<'} </button>
-                            <button id="nextPurpose" onClick={this.handlePurposeBtn}> {'>>'} </button>
-                        </div>
-
-
-                        <button onClick={this.addTripToOrder}>
-                            Додати відрядження до наказу
-                        </button>
 
                     </div>
 
                     : ''}
-                <DwnldBtn tripsArr={this.state.tripsArr} />
+
+                {this.state.tripsArr.length
+                    ? <DwnldBtn tripsArr={this.state.tripsArr} />
+                    : ''
+                }
+
+
+
             </div>
         );
     }
