@@ -43,7 +43,6 @@ class FormComponent extends Component {
         this.handlePlaceState = this.handlePlaceState.bind(this);
         this.handleTripStartDate = this.handleTripStartDate.bind(this);
         this.handleTripEndDate = this.handleTripEndDate.bind(this);
-        this.handlePurposeInput = this.handlePurposeInput.bind(this);
         this.handlePurposeBtn = this.handlePurposeBtn.bind(this);
         this.handleLoopPromptPurposeCheck = this.handleLoopPromptPurposeCheck.bind(this);
         this.handlePurposeState = this.handlePurposeState.bind(this);
@@ -53,6 +52,9 @@ class FormComponent extends Component {
         this.handleBasisInput = this.handleBasisInput.bind(this);
         this.addTripToOrder = this.addTripToOrder.bind(this);
         this.removeTripFromArr = this.removeTripFromArr.bind(this);
+        this.handlePurposeTaskInput = this.handlePurposeTaskInput.bind(this);
+        this.handlePurposeShortInput = this.handlePurposeShortInput.bind(this);
+        this.handlePurposeDoneInput = this.handlePurposeDoneInput.bind(this);
 
 
     };
@@ -87,8 +89,14 @@ class FormComponent extends Component {
     handleTripEndDate(event) {
         this.setState({ tripEndDate: event.target.valueAsNumber })
     }
-    handlePurposeInput(event) {
-        this.setState({ tripPurpose: event.target.value })
+    handlePurposeTaskInput(event) {
+        this.setState({ tripPurposeTask: event.target.value })
+    }
+    handlePurposeShortInput(event) {
+        this.setState({ tripPurposeShort: event.target.value })
+    }
+    handlePurposeDoneInput(event) {
+        this.setState({ tripPurposeDone: event.target.value })
     }
 
 
@@ -376,7 +384,7 @@ class FormComponent extends Component {
                                     <label>
                                         <p>Мета відрядження</p>
                                         <textarea
-                                            onChange={this.handlePurposeInput}
+                                            onChange={this.handlePurposeTaskInput}
                                             rows={5}
                                             cols={40}
                                             value={this.state.tripPurposeTask}
@@ -387,7 +395,7 @@ class FormComponent extends Component {
                                     <label>
                                         <p>Мета відрядження скорочено</p>
                                         <textarea
-                                            onChange={this.handlePurposeInput}
+                                            onChange={this.handlePurposeShortInput}
                                             rows={5}
                                             cols={40}
                                             value={this.state.tripPurposeShort}
@@ -401,7 +409,7 @@ class FormComponent extends Component {
                                         <p>Виконано</p>
 
                                         <textarea
-                                            onChange={this.handlePurposeInput}
+                                            onChange={this.handlePurposeDoneInput}
                                             rows={5}
                                             cols={40}
                                             value={this.state.tripPurposeDone}
