@@ -6,7 +6,8 @@ import places from "../db/db-places";
 import purposes from "../db/db-purposes"
 import employes from "../db/db-employe"
 import SelectEmploye from "./selectEmploye.component";
-import TripsShortlist from './tripsShortlist.component'
+import TripsShortlist from './tripsShortlist.component';
+import AddOrderToDBbtn from './addOrderToDBbtn.component';
 
 
 
@@ -265,13 +266,20 @@ class FormComponent extends Component {
 
 
 
+
+
+
+
+
     render() {
         return (
             <div>
+
                 <div className="orderMenu">
                     <div>
                         <label >
                             <p>Від компанії</p>
+
                             <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
                                 <option value=""></option>
                                 <option value="nio">НІО Холод</option>
@@ -309,6 +317,8 @@ class FormComponent extends Component {
                         : ''
                     }
                 </div>
+
+                <AddOrderToDBbtn tripsArr={this.state.tripsArr} />
 
                 {this.state.isEmployeMenuOpen
                     ? <div className="tripMenu">
@@ -450,6 +460,7 @@ class FormComponent extends Component {
                     ? <DwnldBtn tripsArr={this.state.tripsArr} />
                     : ''
                 }
+
 
 
 
