@@ -1,24 +1,20 @@
-import React from "react";
+import React, { useState } from 'react';
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";// for Docxtemplater
 import PizZipUtils from "pizzip/utils/index.js";//part of pizzip
 import { saveAs } from "file-saver";
 
-
-
 const DwnldBtn = ({ tripsArr }) => {
 
-
-
+    const [isTripsArr, setIsTripsArr] = useState(true);
 
     const orderTripListArr = tripsArr.map(
         (trip, index) => {
             const listItem = `${index + 1}.	Відрядити ${trip.employeNameAbrWho} в ${trip.location}, ${trip.companyTo} з ${trip.tripStartDate} р. по ${trip.tripEndDate} р. ${trip.tripPurposeShort}.\r\n`
             return { employeTrip: listItem }
         }
-
-
     );
+
     const orderTripList = tripsArr.reduce(
         (tripsList, trip, index) => (
             tripsList + `${index + 1}.	Відрядити ${trip.employeNameAbr} в ${trip.location}, ${trip.companyTo} з ${trip.tripStartDate} р. по ${trip.tripEndDate} р. ${trip.tripPurposeShort}.\r\n`
@@ -37,59 +33,63 @@ const DwnldBtn = ({ tripsArr }) => {
         ), ''
     );
 
-
-
-
-
-
-
     function loadFile(url, callback) {
         PizZipUtils.getBinaryContent(url, callback);
     }
 
     const generateDocument = () => {
+        if (tripsArr.length !== 0) {
+            setIsTripsArr(true)
 
-        loadFile(
-            "./orderTemplate.docx",
-            function (error, content) {
-                if (error) {
-                    throw error;
+
+            loadFile(
+                "./orderTemplate.docx",
+                function (error, content) {
+                    if (error) {
+                        throw error;
+                    }
+                    const zip = new PizZip(content);
+                    const doc = new Docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true,
+                    });
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render({
+                        company_nameFull: tripsArr[0].companyNameFull,
+                        order_date: tripsArr[0].orderDate,
+                        order_number: tripsArr[0].orderNumber,
+                        order_list: orderTripListArr,
+                        give_trip_documetnTo: giveTripDocumentTo,
+                        sign_list: signList,
+                        trips_arr: tripsArr,
+                    });
+                    const out = doc.getZip().generate({
+                        type: "blob",
+                        mimeType:
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    }); //Output the document using Data-URI
+                    saveAs(out, `Наказ ${tripsArr[0].orderNumber}.docx`);
                 }
-                const zip = new PizZip(content);
-                const doc = new Docxtemplater(zip, {
-                    paragraphLoop: true,
-                    linebreaks: true,
-                });
-
-                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+            );
+        } else {
+            setIsTripsArr(false)
+        }
 
 
 
-                doc.render({
-                    company_nameFull: tripsArr[0].companyNameFull,
-                    order_date: tripsArr[0].orderDate,
-                    order_number: tripsArr[0].orderNumber,
-                    order_list: orderTripListArr,
-                    give_trip_documetnTo: giveTripDocumentTo,
-                    sign_list: signList,
-                    trips_arr: tripsArr,
-                });
-                const out = doc.getZip().generate({
-                    type: "blob",
-                    mimeType:
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                }); //Output the document using Data-URI
-                saveAs(out, `Наказ ${tripsArr[0].orderNumber}.docx`);
-            }
-        );
     };
 
     return (
-        <div className="btnWrapper">
-            <p onClick={generateDocument} >
+        <div className="btn__wrapper">
+            <p style={{ width: "300px" }} className="btn__text" onClick={generateDocument} >
                 Скачати документ
             </p>
-        </div>
+            <div className="warning__wrapper" style={{ minHeight: "25px" }}>
+                {!isTripsArr ?
+                    <p style={{ color: "rgb(251, 103, 103)", margin: "0px" }}>Додайте відрядження до наказу</p>
+                    : ""}
+            </div>
+        </div >
 
     );
 

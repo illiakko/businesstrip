@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import dateFormat, { masks } from "dateformat";
-import DwnldBtn from './dwnldBtn.component'
+import DwnldBtn from './dwnldBtn.component';
 import places from "../db/db-places";
-import purposes from "../db/db-purposes"
-import employes from "../db/db-employe"
+import purposes from "../db/db-purposes";
+import employes from "../db/db-employe";
 import SelectEmploye from "./selectEmploye.component";
 import TripsShortlist from './tripsShortlist.component';
-import AddOrderToDBbtn from './addOrderToDBbtn.component';
+import OldOrders from './oldOrders.component';
 
 
 
@@ -16,6 +16,8 @@ class FormComponent extends Component {
         super(props);
         this.state = {
             isEmployeMenuOpen: false,
+            isOrderInputEmpty: true,
+            isTripInputEmpty: true,
             tripNumber: '',
             employeObj: '',
             location: '',
@@ -185,42 +187,78 @@ class FormComponent extends Component {
     }
 
     addTripToOrder() {
-        this.showEmployeMenu();
-        const tripDurationDays = Math.ceil((this.state.tripEndDate - this.state.tripStartDate + 1) / (1000 * 60 * 60 * 24));
-        const startDate = dateFormat(this.state.tripStartDate, "dd.mm.yyyy")
-        const endDate = dateFormat(this.state.tripEndDate, "dd.mm.yyyy")
-        const doneDate = dateFormat(this.state.tripEndDate, "dd.mm.yyyy")
-        const orderDate = dateFormat(this.state.orderDate, "dd.mm.yyyy")
 
-        const newTrip = {
-            id: uuidv4(),
-            companyName: this.state.companyName,
-            companyNameFull: this.state.companyNameFull,
-            orderNumber: this.state.orderNumber,
-            orderDate: orderDate,
-            tripNumber: this.state.tripNumber,
-            employeName: this.state.employeObj.name,
-            employeNameTo: this.state.employeObj.nameTo,
-            employeNameWho: this.state.employeObj.nameWho,
-            employeNameAbr: this.state.employeObj.nameAbbrev,
-            employeNameAbrWho: this.state.employeObj.nameAbbrevWho,
-            employePosition: this.state.employeObj.position,
-            location: this.state.location,
-            companyTo: this.state.companyTo,
-            tripStartDate: startDate,
-            tripEndDate: endDate,
-            tripDuration: tripDurationDays,
-            tripBasis: this.state.tripBasis,
-            tripPurposeShort: this.state.tripPurposeShort,
-            tripPurposeTask: this.state.tripPurposeTask,
-            tripPurposeDone: this.state.tripPurposeDone,
-            tripDoneDate: doneDate,
+
+
+
+
+        if (this.state.tripNumber !== ''
+            && this.state.tripBasis !== ''
+            && this.state.orderDate !== ''
+            && this.state.employeObj !== ''
+            && this.state.location !== ''
+            && this.state.companyTo !== ''
+            && this.state.tripStartDate !== ''
+            && this.state.tripEndDate !== ''
+            && this.state.tripPurposeTask !== ''
+            && this.state.tripPurposeShort !== ''
+            && this.state.tripPurposeDone !== ''
+        ) {
+
+            const tripDurationDays = Math.ceil((this.state.tripEndDate - this.state.tripStartDate + 1) / (1000 * 60 * 60 * 24));
+            const startDate = dateFormat(this.state.tripStartDate, "dd.mm.yyyy")
+            const endDate = dateFormat(this.state.tripEndDate, "dd.mm.yyyy")
+            const doneDate = dateFormat(this.state.tripEndDate, "dd.mm.yyyy")
+            const orderDate = dateFormat(this.state.orderDate, "dd.mm.yyyy")
+
+            const newTrip = {
+                id: uuidv4(),
+                companyName: this.state.companyName,
+                companyNameFull: this.state.companyNameFull,
+                orderNumber: this.state.orderNumber,
+                orderDate: orderDate,
+                tripNumber: this.state.tripNumber,
+                employeName: this.state.employeObj.name,
+                employeNameTo: this.state.employeObj.nameTo,
+                employeNameWho: this.state.employeObj.nameWho,
+                employeNameAbr: this.state.employeObj.nameAbbrev,
+                employeNameAbrWho: this.state.employeObj.nameAbbrevWho,
+                employePosition: this.state.employeObj.position,
+                location: this.state.location,
+                companyTo: this.state.companyTo,
+                tripStartDate: startDate,
+                tripEndDate: endDate,
+                tripDuration: tripDurationDays,
+                tripBasis: this.state.tripBasis,
+                tripPurposeShort: this.state.tripPurposeShort,
+                tripPurposeTask: this.state.tripPurposeTask,
+                tripPurposeDone: this.state.tripPurposeDone,
+                tripDoneDate: doneDate,
+            }
+
+            const newTripArr = this.state.tripsArr.concat(newTrip);
+
+            this.showEmployeMenu();
+
+            this.setState({
+                isEmployeMenuOpen: !this.state.isEmployeMenuOpen,
+                isTripInputEmpty: true,
+                tripNumber: '',
+                companyTo: '',
+                tripsArr: newTripArr
+            })
+
+
+        } else {
+            this.setState({
+                isTripInputEmpty: false,
+            })
         }
 
-        const newTripArr = this.state.tripsArr.concat(newTrip);
-        this.setState({ tripsArr: newTripArr })
-
     }
+
+
+
 
     handleCompanyInput(event) {
 
@@ -248,10 +286,20 @@ class FormComponent extends Component {
     }
 
     showEmployeMenu() {
-        this.setState({
-            isEmployeMenuOpen: !this.state.isEmployeMenuOpen
+        if (this.state.companyName !== ''
+            && this.state.orderNumber !== ''
+            && this.state.orderDate !== '') {
 
-        })
+            this.setState({
+                isEmployeMenuOpen: !this.state.isEmployeMenuOpen,
+                isOrderInputEmpty: true
+            })
+
+        } else {
+            this.setState({
+                isOrderInputEmpty: false
+            })
+        }
     }
 
 
@@ -271,197 +319,208 @@ class FormComponent extends Component {
 
 
 
+
+
+
+
+
+
+
     render() {
         return (
-            <div>
+            <div className="root__wrapper">
 
-                <div className="orderMenu">
-                    <div>
-                        <label >
-                            <p>Від компанії</p>
+                <div>
+                    <h3>Новий наказ</h3>
+                    <div className="orderMenu__wrapper">
+                        <div className="orderMenu__sectionWrapper">
+                            <div className="orderMenu__inputsSection">
+                                <div className="orderMenu__inputWrapper">
+                                    <label >
+                                        <p >Від компанії</p>
+                                        <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
+                                            <option value=""></option>
+                                            <option value="nio">НІО Холод</option>
+                                            <option value="yuz">ЮЖ Холод</option>
+                                        </select>
+                                    </label>
+                                </div>
 
-                            <select name="companyName" id="companySelect" onChange={this.handleCompanyInput}>
-                                <option value=""></option>
-                                <option value="nio">НІО Холод</option>
-                                <option value="yuz">ЮЖ Холод</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div>
-                        <label >
-                            <p>Дата наказу</p>
+                                <div className="orderMenu__inputWrapper">
+                                    <label >
+                                        <p>Дата наказу</p>
 
-                            <input type="date" onChange={this.handleOrdertDate} />
-                        </label>
-                    </div>
-                    <div>
-                        <label >
-                            <p>Номер наказу</p>
+                                        <input type="date" onChange={this.handleOrdertDate} />
+                                    </label>
+                                </div>
 
-                            <input type="text" onChange={this.handleOrdertNumber} />
-                        </label>
-                    </div>
-                    <div className="tripShortlist">
-                        <ul>
+                                <div className="orderMenu__inputWrapper">
+                                    <label >
+                                        <p>Номер наказу</p>
+
+                                        <input type="text" onChange={this.handleOrdertNumber} />
+                                    </label>
+                                </div>
+                            </div>
+
+                            <DwnldBtn tripsArr={this.state.tripsArr} />
+
+                        </div>
+
+                        <div className="orderMenu__tripShortlistWrapper">
                             <TripsShortlist trips={this.state.tripsArr} removeTrip={this.removeTripFromArr} />
-                        </ul>
+                            {!this.state.isEmployeMenuOpen
+                                ?
+                                <div className="btn__wrapper">
+                                    <p style={{ width: "300px" }} className="btn__text" onClick={this.showEmployeMenu}>Створити нове відрядження</p>
+                                    <div className="warning__wrapper" style={{ minHeight: "25px" }}>
+                                        {!this.state.isOrderInputEmpty ?
+                                            <p style={{ color: "rgb(251, 103, 103)", margin: "0px" }}>Введіть данні наказу</p>
+                                            : ""}
+                                    </div>
+                                </div>
+                                : ''
+                            }
+                        </div>
+
                     </div>
-
-
-
                 </div>
 
-                <div className="btnWrapper">
-                    {!this.state.isEmployeMenuOpen
-                        ? <p onClick={this.showEmployeMenu}>Нове відрядження</p>
-                        : ''
-                    }
-                </div>
 
-                <AddOrderToDBbtn tripsArr={this.state.tripsArr} />
+
+
 
                 {this.state.isEmployeMenuOpen
-                    ? <div className="tripMenu">
+                    ?
+                    <div>
+                        <h4>Нове відрядження</h4>
+                        <div className="tripMenu">
 
-                        <div className="tripMenuSections">
-                            <div className="tripNumberBasisDateWrapper" >
-                                <div className="tripNumberBasis">
-                                    <div>
-                                        <label>
-                                            <p>Номер посвідчення</p>
-                                            <input onChange={this.handleTripNumber} type="text" />
-                                        </label>
+                            <div className="tripMenuSections">
+                                <div className="tripNumberBasisDateWrapper" >
+                                    <div className="tripNumberBasis">
+                                        <div>
+                                            <label>
+                                                <p>Номер посвідчення</p>
+                                                <input onChange={this.handleTripNumber} type="text" />
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <label>
+                                                <p>Підстава на відряждення (Договір)</p>
+                                                <input type="basis" onChange={this.handleBasisInput} />
+                                            </label>
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <label>
-                                            <p>Підстава на відряждення (Договір)</p>
-                                            <input type="basis" onChange={this.handleBasisInput} />
-                                        </label>
+                                    <div className="tripEmploye">
+                                        <SelectEmploye handleChange={this.handleNameInput} />
                                     </div>
-
-                                </div>
-
-                                <div className="tripEmploye">
-                                    <SelectEmploye handleChange={this.handleNameInput} />
-                                </div>
-
-                                <div className="tripLocationCompany">
-
-
 
                                     <div className="tripLocationCompany">
+
+
+                                        <div className="tripLocationCompany">
+                                            <div>
+                                                <label>
+                                                    <p>Місце призначення</p>
+                                                    <input onChange={this.handleLocationInput} type="text" value={this.state.location} />
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label>
+                                                    <p>Підприємство</p>
+                                                    <input onChange={this.handleCompanyToInput} type="text" value={this.state.companyTo} />
+                                                </label>
+                                            </div>
+                                            <div className="navigationBtn">
+                                                <p id="prevPlace" onClick={this.handlePlaceBtn}> {'<<'} </p>
+                                                <p id="nextPlace" onClick={this.handlePlaceBtn}> {'>>'} </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="tripDate">
                                         <div>
                                             <label>
-                                                <p>Місце призначення</p>
-                                                <input onChange={this.handleLocationInput} type="text" value={this.state.location} />
+                                                <p>Початок відрядження</p>
+                                                <input type="date" onChange={this.handleTripStartDate} />
                                             </label>
                                         </div>
                                         <div>
                                             <label>
-                                                <p>Підприємство</p>
-                                                <input onChange={this.handleCompanyToInput} type="text" value={this.state.companyTo} />
+                                                <p>Кінець відрядження</p>
+                                                <input type="date" onChange={this.handleTripEndDate} />
                                             </label>
                                         </div>
-                                        <div className="navigationBtn">
-                                            <p id="prevPlace" onClick={this.handlePlaceBtn}> {'<<'} </p>
-                                            <p id="nextPlace" onClick={this.handlePlaceBtn}> {'>>'} </p>
-                                        </div>
+
                                     </div>
-
                                 </div>
+                                <div className="tripPurposeWrapper">
 
-
-                                <div className="tripDate">
                                     <div>
                                         <label>
-                                            <p>Початок відрядження</p>
-                                            <input type="date" onChange={this.handleTripStartDate} />
+                                            <p>Мета відрядження</p>
+                                            <textarea
+                                                onChange={this.handlePurposeTaskInput}
+                                                rows={5}
+                                                cols={40}
+                                                value={this.state.tripPurposeTask}
+                                            />
                                         </label>
                                     </div>
                                     <div>
                                         <label>
-                                            <p>Кінець відрядження</p>
-                                            <input type="date" onChange={this.handleTripEndDate} />
+                                            <p>Мета відрядження скорочено</p>
+                                            <textarea
+                                                onChange={this.handlePurposeShortInput}
+                                                rows={5}
+                                                cols={40}
+                                                value={this.state.tripPurposeShort}
+                                            />
                                         </label>
                                     </div>
 
+
+                                    <div>
+                                        <label>
+                                            <p>Виконано</p>
+
+                                            <textarea
+                                                onChange={this.handlePurposeDoneInput}
+                                                rows={5}
+                                                cols={40}
+                                                value={this.state.tripPurposeDone}
+                                            />
+                                        </label>
+                                    </div>
+
+                                    <div className="btn__wrapper">
+                                        <p className="btn__text" id="prevPurpose" onClick={this.handlePurposeBtn}> {'<<'} </p>
+                                        <p className="btn__text" id="nextPurpose" onClick={this.handlePurposeBtn}> {'>>'} </p>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="tripPurposeWrapper">
 
-                                <div>
-                                    <label>
-                                        <p>Мета відрядження</p>
-                                        <textarea
-                                            onChange={this.handlePurposeTaskInput}
-                                            rows={5}
-                                            cols={40}
-                                            value={this.state.tripPurposeTask}
-                                        />
-                                    </label>
+                            <div className="btn__wrapper">
+                                <p className="btn__text" onClick={this.addTripToOrder}>
+                                    Додати відрядження до наказу
+                                </p>
+                                <div className="warning__wrapper" style={{ minHeight: "25px" }}>
+                                    {!this.state.isTripInputEmpty ?
+                                        <p style={{ color: "rgb(251, 103, 103)", margin: "0px" }}>Заповніть усі поля відрядження</p>
+                                        : ""}
                                 </div>
-                                <div>
-                                    <label>
-                                        <p>Мета відрядження скорочено</p>
-                                        <textarea
-                                            onChange={this.handlePurposeShortInput}
-                                            rows={5}
-                                            cols={40}
-                                            value={this.state.tripPurposeShort}
-                                        />
-                                    </label>
-                                </div>
-
-
-                                <div>
-                                    <label>
-                                        <p>Виконано</p>
-
-                                        <textarea
-                                            onChange={this.handlePurposeDoneInput}
-                                            rows={5}
-                                            cols={40}
-                                            value={this.state.tripPurposeDone}
-                                        />
-                                    </label>
-                                </div>
-
-                                <div className="btnWrapper">
-                                    <p id="prevPurpose" onClick={this.handlePurposeBtn}> {'<<'} </p>
-                                    <p id="nextPurpose" onClick={this.handlePurposeBtn}> {'>>'} </p>
-                                </div>
-
-
                             </div>
-
                         </div>
-
-
-
-
-
-
-
-
-
-
-                        <div className="btnWrapper">
-                            <p onClick={this.addTripToOrder}>
-                                Додати відрядження до наказу
-                            </p>
-                        </div>
-
                     </div>
 
                     : ''}
 
-                {this.state.tripsArr.length
-                    ? <DwnldBtn tripsArr={this.state.tripsArr} />
-                    : ''
-                }
 
 
+                <OldOrders tripsArr={this.state.tripsArr} />
 
 
             </div>
