@@ -1,33 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from "axios"
-const URL_TRIP = 'http://localhost:5000/trip'
+import React from 'react';
 
-const OldOrders = (tripsArr) => {
-
-    const [ordersArr, setOrdersArr] = useState([]);
-    const [isOrderAdded, setIsOrderAdded] = useState(false);
-
-    const getOldOrders = async () => {
-        const { data } = await axios.get(URL_TRIP);
-        const parsedData = data.map((orderFromDB) => {
-            return (
-                {
-                    _id: orderFromDB._id,
-                    order: JSON.parse(orderFromDB.order)
-                }
-            )
-        })
-        setOrdersArr(parsedData);
-    };
-
-    useEffect(() => {
-        getOldOrders();
-    }, []);
-
-
-
-
-
+const OldOrders = ({ oldOrdersArr, removeOrderFromDB }) => {
 
     return (
         <div className='oldOrders-wrapper'>
@@ -35,12 +8,12 @@ const OldOrders = (tripsArr) => {
             <div className='oldOrders-container'>
                 <ul>
                     {
-                        ordersArr ?
-                            ordersArr.map((order) => {
+                        oldOrdersArr.length !== 0 ?
+                            oldOrdersArr.map((order) => {
                                 return (
                                     <li key={order._id}>
                                         <div>
-                                            <p className="oldOrders-li"><span className="deleteBtn">X</span>{order.order[0].companyName} наказ № {order.order[0].orderNumber} від {order.order[0].orderDate} </p>
+                                            <p className="oldOrders-li"><span id={order._id} className="deleteBtn" onClick={removeOrderFromDB} >X</span>{order.order[0].companyName} наказ № {order.order[0].orderNumber} від {order.order[0].orderDate} </p>
                                             <ul>
                                                 {order.order.map((trip, index) => {
                                                     return (

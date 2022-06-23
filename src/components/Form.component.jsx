@@ -6,14 +6,18 @@ import places from "../db/db-places";
 import purposes from "../db/db-purposes";
 import employes from "../db/db-employe";
 import SelectEmploye from "./selectEmploye.component";
-import TripsShortlist from './tripsShortlist.component';
 import OldOrders from './oldOrders.component';
-
+import axios from "axios"
 
 
 class FormComponent extends Component {
+
+
+
     constructor(props) {
         super(props);
+
+
         this.state = {
             isEmployeMenuOpen: false,
             isOrderInputEmpty: true,
@@ -34,7 +38,8 @@ class FormComponent extends Component {
             orderNumber: '',
             companyName: '',
             companyNameFull: '',
-            tripsArr: []
+            tripsArr: [],
+            oldOrdersArr: [],
         }
         this.handleCompanyInput = this.handleCompanyInput.bind(this);
         this.handleTripNumber = this.handleTripNumber.bind(this);
@@ -58,6 +63,9 @@ class FormComponent extends Component {
         this.handlePurposeTaskInput = this.handlePurposeTaskInput.bind(this);
         this.handlePurposeShortInput = this.handlePurposeShortInput.bind(this);
         this.handlePurposeDoneInput = this.handlePurposeDoneInput.bind(this);
+        this.handleTripPOSTrequest = this.handleTripPOSTrequest.bind(this);
+        this.getOldOrders = this.getOldOrders.bind(this);
+        this.removeOrderFromDB = this.removeOrderFromDB.bind(this);
 
 
     };
@@ -187,11 +195,6 @@ class FormComponent extends Component {
     }
 
     addTripToOrder() {
-
-
-
-
-
         if (this.state.tripNumber !== ''
             && this.state.tripBasis !== ''
             && this.state.orderDate !== ''
@@ -309,8 +312,65 @@ class FormComponent extends Component {
         this.setState({
             tripsArr: newTripsArr
         })
+    }
+
+    removeOrderFromDB(event) {
+        axios.delete(`http://localhost:5000/trip/${event.target.id}`)
+            .then(res => {
+                console.log(res);
+                this.getOldOrders()
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    handleTripPOSTrequest() {
+        axios.post('http://localhost:5000/trip', { order: this.state.tripsArr })
+            .then(res => {
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
     }
+
+
+    getOldOrders = async () => {
+
+        const { data } = await axios.get('http://localhost:5000/trip');
+        const parsedData = data.map((orderFromDB) => {
+            return (
+                {
+                    _id: orderFromDB._id,
+                    order: JSON.parse(orderFromDB.order)
+                }
+            )
+        })
+        this.setState({ oldOrdersArr: parsedData })
+
+    };
+
+    componentDidMount() {
+        this.getOldOrders()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -368,7 +428,32 @@ class FormComponent extends Component {
                         </div>
 
                         <div className="orderMenu__tripShortlistWrapper">
-                            <TripsShortlist trips={this.state.tripsArr} removeTrip={this.removeTripFromArr} />
+                            {
+                                this.state.tripsArr.length === 0
+                                    ?
+                                    <p>Тут буде відображатись список відряджень прикріплених до наказу.</p>
+                                    :
+                                    <div className="orderMenu__tripShortlist">
+
+                                        <p>Відрядження прикріплені до наказу № {this.state.tripsArr[0].orderNumber}:</p>
+                                        <ul>
+                                            {this.state.tripsArr.map((trip, index) => {
+                                                return (
+                                                    <li key={index} >
+                                                        <p><span className="deleteBtn" onClick={this.removeTripFromArr} id={trip.id}>X</span> {trip.tripNumber}. Відрядити {trip.position} {trip.employeNameAbr}  в {trip.location}, {trip.companyTo}   з {trip.tripStartDate} р. по {trip.tripEndDate} р. {trip.tripPurposeShort}.</p>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+
+                                        <div className="btn__wrapper">
+                                            <p style={{ width: "300px" }} className="btn__text" onClick={this.handleTripPOSTrequest}>Додати наказ до бази данних</p>
+                                        </div>
+
+                                        <p style={{ margin: "auto" }}>або</p>
+                                    </div >
+                            }
+
                             {!this.state.isEmployeMenuOpen
                                 ?
                                 <div className="btn__wrapper">
@@ -385,10 +470,6 @@ class FormComponent extends Component {
 
                     </div>
                 </div>
-
-
-
-
 
                 {this.state.isEmployeMenuOpen
                     ?
@@ -414,13 +495,13 @@ class FormComponent extends Component {
                                         </div>
                                     </div>
 
+
                                     <div className="tripEmploye">
                                         <SelectEmploye handleChange={this.handleNameInput} />
                                     </div>
 
+
                                     <div className="tripLocationCompany">
-
-
                                         <div className="tripLocationCompany">
                                             <div>
                                                 <label>
@@ -441,6 +522,7 @@ class FormComponent extends Component {
                                         </div>
                                     </div>
 
+
                                     <div className="tripDate">
                                         <div>
                                             <label>
@@ -454,10 +536,12 @@ class FormComponent extends Component {
                                                 <input type="date" onChange={this.handleTripEndDate} />
                                             </label>
                                         </div>
-
                                     </div>
                                 </div>
+
+
                                 <div className="tripPurposeWrapper">
+
 
                                     <div>
                                         <label>
@@ -503,6 +587,7 @@ class FormComponent extends Component {
                                 </div>
                             </div>
 
+
                             <div className="btn__wrapper">
                                 <p className="btn__text" onClick={this.addTripToOrder}>
                                     Додати відрядження до наказу
@@ -519,10 +604,7 @@ class FormComponent extends Component {
                     : ''}
 
 
-
-                <OldOrders tripsArr={this.state.tripsArr} />
-
-
+                <OldOrders oldOrdersArr={this.state.oldOrdersArr} removeOrderFromDB={this.removeOrderFromDB} />
             </div>
         );
     }
