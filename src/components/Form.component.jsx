@@ -1,17 +1,19 @@
 import React, { Component } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import dateFormat, { masks } from "dateformat";
+import axios from "axios"
+
 import DwnldBtn from './dwnldBtn.component';
 import places from "../db/db-places";
 import purposes from "../db/db-purposes";
 import employes from "../db/db-employe";
 import SelectEmploye from "./selectEmploye.component";
 import OldOrders from './oldOrders.component';
-import axios from "axios"
+import Modal from './Modal/modal.component'
+
 
 
 class FormComponent extends Component {
-
 
 
     constructor(props) {
@@ -19,6 +21,7 @@ class FormComponent extends Component {
 
 
         this.state = {
+            isModalActive: false,
             isEmployeMenuOpen: false,
             isOrderInputEmpty: true,
             isTripInputEmpty: true,
@@ -66,6 +69,7 @@ class FormComponent extends Component {
         this.handleTripPOSTrequest = this.handleTripPOSTrequest.bind(this);
         this.getOldOrders = this.getOldOrders.bind(this);
         this.removeOrderFromDB = this.removeOrderFromDB.bind(this);
+        this.setModalActive = this.setModalActive.bind(this);
 
 
     };
@@ -77,7 +81,9 @@ class FormComponent extends Component {
     handleBasisInput(event) {
         this.setState({ tripBasis: event.target.value })
     }
-
+    setModalActive(boolean) {
+        this.setState({ isModalActive: boolean });
+    }
 
     handleNameInput(event) {
         const currentEmploye = employes.find(employe => {
@@ -317,7 +323,6 @@ class FormComponent extends Component {
     removeOrderFromDB(event) {
         axios.delete(`http://localhost:5000/trip/${event.target.id}`)
             .then(res => {
-                console.log(res);
                 this.getOldOrders()
             })
             .catch(function (error) {
@@ -328,7 +333,8 @@ class FormComponent extends Component {
     handleTripPOSTrequest() {
         axios.post('http://localhost:5000/trip', { order: this.state.tripsArr })
             .then(res => {
-
+                this.setModalActive(true)
+                this.getOldOrders()
             })
             .catch(function (error) {
                 console.log(error);
@@ -390,8 +396,17 @@ class FormComponent extends Component {
         return (
             <div className="root__wrapper">
 
+                <Modal active={this.state.isModalActive} setActive={this.setModalActive}>
+                    <p style={{ color: "limegreen" }}>Наказ додано до бази данних</p>
+                    <div className="btn__wrapper">
+                        <p style={{ width: "100px" }} className="btn__text" onClick={() => this.setModalActive(false)}>ОК</p>
+                    </div>
+
+                </Modal>
+
                 <div>
-                    <h3>Новий наказ</h3>
+                    <h3 onClick={() => this.setModalActive(true)}>Новий наказ</h3>
+                    <i className="fa-light fa-trash-can"></i>
                     <div className="orderMenu__wrapper">
                         <div className="orderMenu__sectionWrapper">
                             <div className="orderMenu__inputsSection">
@@ -440,7 +455,7 @@ class FormComponent extends Component {
                                             {this.state.tripsArr.map((trip, index) => {
                                                 return (
                                                     <li key={index} >
-                                                        <p><span className="deleteBtn" onClick={this.removeTripFromArr} id={trip.id}>X</span> {trip.tripNumber}. Відрядити {trip.position} {trip.employeNameAbr}  в {trip.location}, {trip.companyTo}   з {trip.tripStartDate} р. по {trip.tripEndDate} р. {trip.tripPurposeShort}.</p>
+                                                        <p><span className="deleteBtn" onClick={this.removeTripFromArr} id={trip.id}> X </span>   {trip.tripNumber}. Відрядити {trip.position} {trip.employeNameAbr}  в {trip.location}, {trip.companyTo}   з {trip.tripStartDate} р. по {trip.tripEndDate} р. {trip.tripPurposeShort}.</p>
                                                     </li>
                                                 )
                                             })}

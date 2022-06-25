@@ -264,13 +264,57 @@ ul {
 
 }
 
-.oldOrders-container {
+.oldOrders__wrapper {
+    margin-bottom: 20px;
+
+}
+
+.oldOrders__container {
+    padding: 20px;
     background-color: #e7eef3;
     max-height: 350px;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     margin-bottom: 40px;
 }
 
-.oldOrders-li {
+.oldOrders__orderCaption {
     font-weight: bold;
+}
+
+.oldOrders__orderCaption span {
+    font-weight: 400;
+    margin-right: 20px;
+}
+
+.oldOrders__orderSection {
+    margin: 20px 0 20px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.oldOrders__orderSection:hover {
+    background-color: #fff;
+}
+
+.oldOrders__tripSection {
+    margin: 0 0 0 105px;
+}
+
+
+.icon_wrapper {
+    display: flex;
+}
+
+.icon {
+    margin: 6px;
+}
+
+.icon_wrapper:hover {
+    color: black;
+    transition: all 0.3s;
+}
+
+.icon_wrapper:hover {
+    color: aqua;
 }
