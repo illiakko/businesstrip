@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import dateFormat, { masks } from "dateformat";
-import axios from "axios"
+import axios from "axios";
+import { RiDeleteBin2Line } from 'react-icons/ri';
 
 import DwnldBtn from './dwnldBtn.component';
 import places from "../db/db-places";
@@ -9,7 +10,7 @@ import purposes from "../db/db-purposes";
 import employes from "../db/db-employe";
 import SelectEmploye from "./selectEmploye.component";
 import OldOrders from './oldOrders.component';
-import Modal from './Modal/modal.component'
+import Modal from './Modal/modal.component';
 
 
 
@@ -313,7 +314,7 @@ class FormComponent extends Component {
 
 
     removeTripFromArr(event) {
-        const newTripsArr = this.state.tripsArr.filter(trip => trip.id !== event.target.id)
+        const newTripsArr = this.state.tripsArr.filter(trip => trip.id !== event.currentTarget.id)
 
         this.setState({
             tripsArr: newTripsArr
@@ -402,11 +403,10 @@ class FormComponent extends Component {
                     <div className="btn__wrapper">
                         <p style={{ width: "100px" }} className="btn__text" onClick={() => this.setModalActive(false)}>ОК</p>
                     </div>
-
                 </Modal>
 
                 <div>
-                    <h3 onClick={() => this.setModalActive(true)}>Новий наказ</h3>
+                    <h3>Новий наказ</h3>
                     <i className="fa-light fa-trash-can"></i>
                     <div className="orderMenu__wrapper">
                         <div className="orderMenu__sectionWrapper">
@@ -456,7 +456,20 @@ class FormComponent extends Component {
                                             {this.state.tripsArr.map((trip, index) => {
                                                 return (
                                                     <li key={index} >
-                                                        <p><span className="deleteBtn" onClick={this.removeTripFromArr} id={trip.id}> X </span>   {trip.tripNumber}. Відрядити {trip.position} {trip.employeNameAbr}  в {trip.location}, {trip.companyTo}   з {trip.tripStartDate} р. по {trip.tripEndDate} р. {trip.tripPurposeShort}.</p>
+
+
+
+                                                        <p className="tripShortlist__trip">
+                                                            <div>
+                                                                <p>
+                                                                    {trip.tripNumber}. Відрядити {trip.position} {trip.employeNameAbr}  в {trip.location}, {trip.companyTo}   з {trip.tripStartDate} р. по {trip.tripEndDate} р. {trip.tripPurposeShort}.
+                                                                </p>
+                                                            </div>
+                                                            <div className='icon_wrapper' id={trip.id} onClick={this.removeTripFromArr}>
+                                                                <RiDeleteBin2Line className='icon' /><p>Видалити</p>
+                                                            </div>
+
+                                                        </p>
                                                     </li>
                                                 )
                                             })}

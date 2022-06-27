@@ -288,17 +288,26 @@ ul {
 }
 
 .oldOrders__orderSection {
-    margin: 20px 0 20px 0;
+    margin: 10px 0 10px 0;
+    padding: 10px 30px 10px 30px;
     display: flex;
+    background-color: #e7eef3;
     justify-content: space-between;
+    transition: all 0.5s;
+
 }
 
 .oldOrders__orderSection:hover {
-    background-color: #fff;
+
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.selectedOrder {
+    background-color: #ccd2d7;
 }
 
 .oldOrders__tripSection {
-    margin: 0 0 0 105px;
+    margin: 0 0 0 20px;
 }
 
 
@@ -317,5 +326,16 @@ ul {
 }
 
 .icon_wrapper:hover {
-    color: aqua;
+    color: #6895bc;
+}
+
+.tripShortlist__trip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 5px;
+}
+
+.tripShortlist__trip svg {
+    margin-top: 12px;
 }
