@@ -37,37 +37,39 @@ const dwnldBtnHandler = (tripsArr) => {
 
 
     //temolate part from Docxtemplater
-    loadFile(
-        "./orderTemplate.docx",
+    if (tripsArr.length > 0) {
+        loadFile(
+            "./orderTemplate.docx",
 
+            function (error, content) {
+                if (error) {
+                    throw error;
+                }
+                const zip = new PizZip(content);
+                const doc = new Docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                });
+                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                doc.render({
 
-        function (error, content) {
-            if (error) {
-                throw error;
+                    company_nameFull: tripsArr[0].companyNameFull,
+                    order_date: tripsArr[0].orderDate,
+                    order_number: tripsArr[0].orderNumber,
+                    order_list: orderTripListArr,
+                    give_trip_documetnTo: giveTripDocumentTo,
+                    sign_list: signList,
+                    trips_arr: tripsArr,
+                });
+                const out = doc.getZip().generate({
+                    type: "blob",
+                    mimeType:
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }); //Output the document using Data-URI
+                saveAs(out, `Наказ ${tripsArr[0].orderNumber}.docx`);
             }
-            const zip = new PizZip(content);
-            const doc = new Docxtemplater(zip, {
-                paragraphLoop: true,
-                linebreaks: true,
-            });
-            // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-            doc.render({
-                company_nameFull: tripsArr[0].companyNameFull,
-                order_date: tripsArr[0].orderDate,
-                order_number: tripsArr[0].orderNumber,
-                order_list: orderTripListArr,
-                give_trip_documetnTo: giveTripDocumentTo,
-                sign_list: signList,
-                trips_arr: tripsArr,
-            });
-            const out = doc.getZip().generate({
-                type: "blob",
-                mimeType:
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            }); //Output the document using Data-URI
-            saveAs(out, `Наказ ${tripsArr[0].orderNumber}.docx`);
-        }
-    );
+        );
+    }
 };
 
 export default dwnldBtnHandler

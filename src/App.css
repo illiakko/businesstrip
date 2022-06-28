@@ -339,3 +339,13 @@ ul {
 .tripShortlist__trip svg {
     margin-top: 12px;
 }
+
+.modalChildren__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalChildren__btns {
+    display: flex;
+}

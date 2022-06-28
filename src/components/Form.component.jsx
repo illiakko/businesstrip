@@ -321,9 +321,8 @@ class FormComponent extends Component {
         })
     }
 
-    removeOrderFromDB(event) {
-
-        axios.delete(`http://localhost:5000/trip/${event.currentTarget.id}`)
+    removeOrderFromDB(id) {
+        axios.delete(`http://localhost:5000/trip/${id}`)
             .then(res => {
                 this.getOldOrders()
             })
@@ -341,7 +340,6 @@ class FormComponent extends Component {
             .catch(function (error) {
                 console.log(error);
             });
-
     }
 
 

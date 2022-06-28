@@ -3,20 +3,20 @@ import { RiDeleteBin2Line } from 'react-icons/ri';
 import { BsDownload } from 'react-icons/bs';
 import axios from "axios"
 import dwnldBtnHandler from "../handlers/dwnldBtnHandler"
-import Modal from './Modal2/modal.component';
+import Modal from './Modal/modal.component';
 
 
 const OldOrders = ({ oldOrdersArr, removeOrderFromDB }) => {
 
-
-
     const [orderToDwnld, setOrderToDwnld] = useState([]);
     const [modalActive, setModalActive] = useState(false);
+    const [orderToRemove, setOrderToRemove] = useState();
+    const [isDelitionApproved, setDelitionApproved] = useState(false);
+
 
     const removeOrder = (event) => {
-        console.log(event.target);
         setModalActive(true)
-        removeOrderFromDB(event)
+        setOrderToRemove(event.currentTarget.id)
     }
 
     const getOrderPOSTreqest = function (event) {
@@ -29,20 +29,49 @@ const OldOrders = ({ oldOrdersArr, removeOrderFromDB }) => {
             })
     }
 
+
     useEffect(() => {
         dwnldBtnHandler(orderToDwnld)
     }, [orderToDwnld]);
 
+
+    const handleApproveModalBtn = () => {
+        removeOrderFromDB(orderToRemove)
+        setDelitionApproved(true)
+
+    }
+    const handleConfirmModalBtn = () => {
+        setModalActive(false)
+        setDelitionApproved(false)
+    }
+
+
+    const handleDeclineModalBtn = () => {
+        setModalActive(false)
+    }
 
 
     return (
         <div className='oldOrders__wrapper'>
 
             <Modal active={modalActive} setActive={setModalActive}>
-                <p style={{ color: "limegreen" }} >Наказ видалено</p>
-                <div className="btn__wrapper">
-                    <p style={{ width: "100px" }} className="btn__text" onClick={() => { setModalActive(false) }}>ОК</p>
-                </div>
+                {
+                    isDelitionApproved
+                        ?
+                        <div className="modalChildren__wrapper">
+                            <p style={{ color: "black" }} >Наказ видалено</p>
+                            <p style={{ width: "200px" }} className="btn__text" onClick={handleConfirmModalBtn}>Ну, і грець з ним!</p>
+                        </div>
+                        :
+                        <div className="modalChildren__wrapper">
+                            <p style={{ color: "red" }} >Видалити наказ?</p>
+                            <div className="modalChildren__btns">
+                                <p style={{ width: "100px" }} className="btn__text" onClick={handleApproveModalBtn}>Так</p>
+                                <p style={{ width: "100px" }} className="btn__text" onClick={handleDeclineModalBtn}>Ні</p>
+                            </div>
+                        </div>
+                }
+
             </Modal>
 
             <h3>Минулі накази</h3>
