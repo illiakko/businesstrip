@@ -322,7 +322,7 @@ class FormComponent extends Component {
     }
 
     removeOrderFromDB(id) {
-        axios.delete(`http://localhost:5000/trip/${id}`)
+        axios.delete(`https://businesstrip-doc.herokuapp.com/trip/${id}`)
             .then(res => {
                 this.getOldOrders()
             })
@@ -332,7 +332,7 @@ class FormComponent extends Component {
     }
 
     handleTripPOSTrequest() {
-        axios.post('http://localhost:5000/trip', { order: this.state.tripsArr })
+        axios.post('https://businesstrip-doc.herokuapp.com/trip', { order: this.state.tripsArr })
             .then(res => {
                 this.setModalActive(true)
                 this.getOldOrders()
@@ -345,7 +345,7 @@ class FormComponent extends Component {
 
     getOldOrders = async () => {
 
-        const { data } = await axios.get('http://localhost:5000/trip');
+        const { data } = await axios.get('https://businesstrip-doc.herokuapp.com/trip');
         const parsedData = data.map((orderFromDB) => {
             return (
                 {

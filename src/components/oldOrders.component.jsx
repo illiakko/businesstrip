@@ -20,7 +20,7 @@ const OldOrders = ({ oldOrdersArr, removeOrderFromDB }) => {
     }
 
     const getOrderPOSTreqest = function (event) {
-        axios.post('http://localhost:5000/order', {
+        axios.post('https://businesstrip-doc.herokuapp.com/order', {
             id: event.currentTarget.id,
         })
             .then((res) => {
